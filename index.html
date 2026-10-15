@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processador de Consultas SQL – Álgebra Relacional, Grafo e Plano de Execução</title>
+  <meta name="description" content="Processador de consultas SQL: valida a sintaxe, converte para álgebra relacional, constrói e otimiza o grafo de operadores com heurísticas e exibe o plano de execução.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%238b7cff'/><text x='32' y='44' font-size='34' text-anchor='middle' fill='white' font-family='serif'>π</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand__logo" aria-hidden="true">σπ⋈</div>
+      <div>
+        <h1>Processador de Consultas</h1>
+        <p>SQL → Álgebra Relacional → Grafo de Operadores → Otimização → Plano de Execução</p>
+      </div>
+    </div>
+    <div class="header-chips">
+      <span class="chip-stat"><strong id="stat-tables">10</strong> tabelas</span>
+      <span class="chip-stat"><strong id="stat-columns">0</strong> atributos</span>
+      <span class="chip-stat chip-stat--accent">Banco de Dados</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <section class="card editor-card" aria-labelledby="editor-title">
+        <div class="card__head">
+          <h2 id="editor-title">Consulta SQL</h2>
+          <span id="live-status" class="badge badge--idle">aguardando</span>
+        </div>
+        <div class="editor">
+          <pre class="editor__highlight" id="sql-highlight" aria-hidden="true"></pre>
+          <textarea id="sql-input" spellcheck="false" autocomplete="off" autocapitalize="off"
+            aria-label="Digite a consulta SQL" placeholder="SELECT ... FROM ... JOIN ... ON ... WHERE ..."></textarea>
+        </div>
+        <div class="editor__actions">
+          <button id="btn-process" class="btn btn--primary" type="button">
+            <span aria-hidden="true">▶</span> Processar consulta <kbd>Ctrl ↵</kbd>
+          </button>
+          <button id="btn-clear" class="btn btn--ghost" type="button">Limpar</button>
+        </div>
+        <div id="error-box" class="error-box" role="alert" hidden></div>
+        <div class="examples">
+          <h3>Exemplos</h3>
+          <div id="examples" class="chips"></div>
+        </div>
+      </section>
+
+      <section class="card schema-card" aria-labelledby="schema-title">
+        <div class="card__head">
+          <h2 id="schema-title">Modelo de dados</h2>
+          <span class="muted small">clique para inserir</span>
+        </div>
+        <input id="schema-filter" class="input" type="search" placeholder="Filtrar tabelas ou atributos…" aria-label="Filtrar metadados">
+        <div id="schema" class="schema"></div>
+      </section>
+    </aside>
+
+    <section class="workspace card" id="workspace">
+      <nav class="tabs" role="tablist" aria-label="Etapas do processamento">
+        <button role="tab" class="tab is-active" id="tab-validation" data-tab="validation"><span class="tab__dot"></span><span class="tab__n">1</span> Validação</button>
+        <button role="tab" class="tab" id="tab-algebra" data-tab="algebra"><span class="tab__dot"></span><span class="tab__n">2</span> Álgebra Relacional</button>
+        <button role="tab" class="tab" id="tab-graph" data-tab="graph"><span class="tab__dot"></span><span class="tab__n">3</span> Grafo de Operadores</button>
+        <button role="tab" class="tab" id="tab-optimization" data-tab="optimization"><span class="tab__dot"></span><span class="tab__n">4</span> Otimização</button>
+        <button role="tab" class="tab" id="tab-plan" data-tab="plan"><span class="tab__dot"></span><span class="tab__n">5</span> Plano de Execução</button>
+      </nav>
+
+      <div class="panels">
+        <section class="panel is-active" id="panel-validation" role="tabpanel" aria-labelledby="tab-validation"></section>
+        <section class="panel" id="panel-algebra" role="tabpanel" aria-labelledby="tab-algebra"></section>
+
+        <section class="panel" id="panel-graph" role="tabpanel" aria-labelledby="tab-graph">
+          <div class="toolbar">
+            <div class="segmented" role="group" aria-label="Versão do grafo">
+              <button id="graph-mode-optimized" class="is-active" data-mode="optimized" type="button">Otimizado</button>
+              <button id="graph-mode-canonical" data-mode="canonical" type="button">Original (canônico)</button>
+            </div>
+            <div id="graph-info" class="muted small"></div>
+            <div class="zoom">
+              <button id="graph-zoom-out" class="icon-btn" type="button" aria-label="Diminuir zoom">−</button>
+              <button id="graph-zoom-fit" class="icon-btn" type="button" aria-label="Ajustar">⤢</button>
+              <button id="graph-zoom-in" class="icon-btn" type="button" aria-label="Aumentar zoom">+</button>
+            </div>
+          </div>
+          <div class="graph-viewport" id="graph-viewport"></div>
+          <div class="legend">
+            <span><i class="lg lg--rel"></i>Tabela (folha)</span>
+            <span><i class="lg lg--sel"></i>σ Seleção</span>
+            <span><i class="lg lg--proj"></i>π Projeção</span>
+            <span><i class="lg lg--join"></i>⋈ Junção</span>
+            <span><i class="lg lg--prod"></i>× Produto</span>
+            <span class="muted">Arestas = fluxo de resultados intermediários (folhas → raiz)</span>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-optimization" role="tabpanel" aria-labelledby="tab-optimization"></section>
+
+        <section class="panel" id="panel-plan" role="tabpanel" aria-labelledby="tab-plan">
+          <div class="plan-layout">
+            <div class="plan-col">
+              <div class="panel-head">
+                <h3>Ordem de execução</h3>
+                <button id="btn-copy-plan" class="btn btn--ghost btn--sm" type="button">Copiar plano</button>
+              </div>
+              <ol id="plan-list" class="plan-list"></ol>
+            </div>
+            <div class="plan-col plan-col--graph">
+              <div class="panel-head">
+                <h3>Grafo otimizado</h3>
+                <span class="muted small">passe o mouse para relacionar etapa ↔ nó</span>
+              </div>
+              <div class="graph-viewport graph-viewport--plan" id="plan-graph-viewport"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    Trabalho de Banco de Dados · Processador de Consultas (HU1–HU5) · parsing por regex + parser descendente recursivo · otimização heurística
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/metadata.js"></script>
+  <script src="js/lexer.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/validator.js"></script>
+  <script src="js/algebra.js"></script>
+  <script src="js/optimizer.js"></script>
+  <script src="js/plan.js"></script>
+  <script src="js/processor.js"></script>
+  <script src="js/graph-renderer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

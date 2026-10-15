@@ -1,4 +1,4 @@
-# ⚙️ Processador de Consultas SQL
+# Processador de Consultas SQL
 
 > Um processador completo de consultas SQL com análise léxica, parser descendente recursivo, conversão para álgebra relacional, construção e renderização gráfica de grafos de operadores em SVG, otimização por heurísticas e geração de plano de execução.
 
@@ -8,26 +8,26 @@
 
 ---
 
-## 📌 Sumário
+## Sumário
 
-- [Visão Geral](#-visão-geral)
-- [Funcionalidades e Histórias de Usuário (HU)](#-funcionalidades-e-histórias-de-usuário-hu)
+- [Visão Geral](#visão-geral)
+- [Funcionalidades e Histórias de Usuário (HU)](#funcionalidades-e-histórias-de-usuário-hu)
   - [HU1 – Validação da Consulta SQL](#hu1--validação-da-consulta-sql)
   - [HU2 – Conversão para Álgebra Relacional](#hu2--conversão-para-álgebra-relacional)
   - [HU3 – Grafo de Operadores (Representação Gráfica)](#hu3--grafo-de-operadores-representação-gráfica)
   - [HU4 – Otimização Heurística](#hu4--otimização-heurística)
   - [HU5 – Plano de Execução](#hu5--plano-de-execução)
-- [Interface Gráfica e Visualização](#-interface-gráfica-e-visualização)
-- [Arquitetura e Estrutura do Projeto](#-arquitetura-e-estrutura-do-projeto)
-- [Modelo de Dados (Catálogo)](#-modelo-de-dados-catálogo)
-- [Gramática e Regras de Sintaxe](#-gramática-e-regras-de-sintaxe)
-- [Como Executar Localmente](#-como-executar-localmente)
-- [Executando Testes e Linter](#-executando-testes-e-linter)
-- [Consultas de Exemplo](#-consultas-de-exemplo)
+- [Interface Gráfica e Visualização](#interface-gráfica-e-visualização)
+- [Arquitetura e Estrutura do Projeto](#arquitetura-e-estrutura-do-projeto)
+- [Modelo de Dados (Catálogo)](#modelo-de-dados-catálogo)
+- [Gramática e Regras de Sintaxe](#gramática-e-regras-de-sintaxe)
+- [Como Executar Localmente](#como-executar-localmente)
+- [Executando Testes e Linter](#executando-testes-e-linter)
+- [Consultas de Exemplo](#consultas-de-exemplo)
 
 ---
 
-## 📖 Visão Geral
+## Visão Geral
 
 Este projeto simula o núcleo do subsistema de processamento e otimização de consultas de um Sistema de Gerenciamento de Banco de Dados Relacional (SGBD).
 
@@ -54,7 +54,7 @@ O fluxo completo transforma uma instrução SQL bruta em etapas determinísticas
 
 ---
 
-## 🚀 Funcionalidades e Histórias de Usuário (HU)
+## Funcionalidades e Histórias de Usuário (HU)
 
 ### HU1 – Validação da Consulta SQL
 - **Normalização:** remoção de espaços redundantes, quebras de linha e padronização preservando literais de texto.
@@ -109,7 +109,7 @@ Transformação da árvore canônica em uma árvore otimizada aplicando as heur�
 
 ---
 
-## 💻 Interface Gráfica e Visualização
+## Interface Gráfica e Visualização
 
 A aplicação disponibiliza uma interface visual desenvolvida com HTML5, CSS moderno e JavaScript Vanilla:
 
@@ -128,7 +128,7 @@ A aplicação disponibiliza uma interface visual desenvolvida com HTML5, CSS mod
 
 ---
 
-## 📂 Arquitetura e Estrutura do Projeto
+## Arquitetura e Estrutura do Projeto
 
 ```
 Processador_Consultas/
@@ -157,7 +157,7 @@ Processador_Consultas/
 
 ---
 
-## 🗄️ Modelo de Dados (Catálogo)
+## Modelo de Dados (Catálogo)
 
 O catálogo inclui 10 tabelas relacionais com dados estatísticos fictícios para avaliação heurística:
 
@@ -176,7 +176,7 @@ O catálogo inclui 10 tabelas relacionais com dados estatísticos fictícios par
 
 ---
 
-## 📝 Gramática e Regras de Sintaxe
+## Gramática e Regras de Sintaxe
 
 O processador aceita consultas com a seguinte estrutura básica:
 
@@ -196,7 +196,7 @@ FROM tabela [alias] [, tabela [alias] ...]
 
 ---
 
-## 🛠️ Como Executar Localmente
+## Como Executar Localmente
 
 ### Pré-requisitos
 - **Node.js** (versão 18 ou superior)
@@ -220,7 +220,7 @@ Após executar, acesse o endereço indicado no terminal (por padrão `http://loc
 
 ---
 
-## 🧪 Executando Testes e Linter
+## Executando Testes e Linter
 
 ### Testes Automatizados (Node Test Runner)
 Executa 20 testes unitários cobrindo todos os cenários das histórias de usuário (HU1 a HU5):
@@ -236,7 +236,7 @@ npm run lint
 
 ---
 
-## 💡 Consultas de Exemplo
+## Consultas de Exemplo
 
 Experimente testar estas consultas no editor:
 
@@ -279,6 +279,6 @@ WHERE c.idCliente = e.Cliente_idCliente
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto está sob a licença [MIT](LICENSE).
